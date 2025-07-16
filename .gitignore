@@ -1,0 +1,28 @@
+# Binarios
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Variables de entorno
+.env
+
+# Dependencias de Node.js (si las hay)
+node_modules/
+package-lock.json
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
+
+# Archivos de log
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de Go
+*.test
+*.out
+vendor/
