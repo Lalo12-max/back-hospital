@@ -11,14 +11,16 @@ Sistema de gestión de citas médicas desarrollado con Go y Fiber (backend) y An
 - **Expedientes Médicos**: Historial clínico de pacientes
 - **Recetas Médicas**: Gestión de prescripciones
 - **Horarios**: Control de disponibilidad médica
-- **Frontend Angular**: Interfaz de usuario moderna y responsiva
-- **API REST**: Endpoints bien estructurados
+- **API REST**: Endpoints bien estructurados con validación
 - **CORS**: Habilitado para desarrollo frontend
 - **Logging**: Sistema de logs integrado
+- **Rate Limiting**: Control de límites de peticiones
+- **Middleware de Seguridad**: Validación y autenticación robusta
 
 ## 📁 Estructura del Proyecto
 Backend-Base-de-datos-main/
 ├── .env                    # Variables de entorno
+├── .gitignore             # Archivos ignorados por Git
 ├── .vscode/
 │   └── settings.json      # Configuración de VS Code
 ├── README.md              # Documentación del proyecto
@@ -26,7 +28,7 @@ Backend-Base-de-datos-main/
 ├── go.mod                 # Dependencias de Go
 ├── go.sum                 # Checksums de dependencias
 ├── main.go                # Punto de entrada de la aplicación
-├── hospital-system.exe    # Ejecutable compilado
+├── package.json           # Configuración de Node.js (si aplica)
 ├── config/
 │   └── database.go        # Configuración de base de datos
 ├── models/                # Modelos de datos
@@ -35,20 +37,24 @@ Backend-Base-de-datos-main/
 │   ├── consulta.go        # Modelo de consulta
 │   ├── expediente.go      # Modelo de expediente
 │   ├── receta.go          # Modelo de receta
-│   └── horario.go         # Modelo de horario
+│   ├── horario.go         # Modelo de horario
+│   └── log.go             # Modelo de logs
 ├── handlers/              # Controladores de la API
-│   ├── auth.go            # Handlers de autenticación y MFA
+│   ├── auth.go            # Handlers de autenticación
 │   ├── mfa.go             # Handlers específicos de MFA
 │   ├── usuarios.go        # Handlers de usuarios
 │   ├── consultorios.go    # Handlers de consultorios
 │   ├── consultas.go       # Handlers de consultas
 │   ├── expedientes.go     # Handlers de expedientes
 │   ├── recetas.go         # Handlers de recetas
-│   └── horarios.go        # Handlers de horarios
+│   ├── horarios.go        # Handlers de horarios
+│   └── logs.go            # Handlers de logs
 ├── middleware/            # Middlewares
 │   ├── auth.go            # Middleware de autenticación
+│   ├── logger.go          # Middleware de logging
 │   ├── ratelimit.go       # Middleware de rate limiting
-│   └── response_validator.go # Validador de respuestas
+│   ├── response_validator.go # Validador de respuestas
+│   └── role_guard.go      # Middleware de roles
 ├── utils/                 # Utilidades
 │   ├── jwt.go             # Utilidades JWT
 │   ├── mfa.go             # Utilidades MFA
@@ -56,161 +62,166 @@ Backend-Base-de-datos-main/
 │   └── response_codes.go  # Códigos de respuesta
 ├── routes/
 │   └── routes.go          # Configuración de rutas
-├── schemas/
-│   └── response_schemas.go # Esquemas de respuesta
-└── hospital-frontend/     # Frontend Angular
-├── src/
-│   ├── app/
-│   │   ├── pages/
-│   │   │   └── auth/
-│   │   │       ├── login/
-│   │   │       └── register/
-│   │   └── services/
-│   │       └── auth.service.ts
-│   └── styles.css
-├── angular.json
-├── package.json
-└── tsconfig.json
+└── schemas/
+└── response_schemas.go # Esquemas de respuesta
 
 
 ## 🛠️ Tecnologías
 
 ### Backend
 - **Go** 1.21+
-- **Fiber** v2 
-- Supabase
+- **Fiber** v2 - Framework web rápido y minimalista
+- **Supabase PostgreSQL** - Base de datos en la nube
 - **JWT** para autenticación
-- **TOTP** para MFA
+- **TOTP** para autenticación de dos factores
 - **bcrypt** para hash de contraseñas
-
-### Frontend
-- **Angular** 17+
-- **PrimeNG** 
-- **TypeScript**
-- **RxJS**
-- **Angular Reactive Forms**
+- **GORM** para ORM (si aplica)
 
 ## 📋 Requisitos
 
 - **Go** 1.21 o superior
-- **Node.js** 18+ y npm
-- **Angular CLI** 17+
-- cuenta de Supabase
-- **Git**
+- **Git** para control de versiones
+- Cuenta de **Supabase** configurada
+- Editor de código (recomendado: VS Code)
 
 ## 🛠️ Instalación
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <url-del-repositorio>
-cd Backend-Base-de-datos-main
+git clone https://github.com/Lalo12-max/back-hospital.git
+cd back-hospital
+```
 
-2. Configurar el Backend
-Instalar dependencias de Go
+### 2. Configurar variables de entorno
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+# Configuración de la base de datos
+DATABASE_URL=tu_url_de_supabase
+DB_HOST=tu_host
+DB_PORT=5432
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_NAME=tu_base_de_datos
+
+# Configuración JWT
+JWT_SECRET=tu_clave_secreta_jwt
+JWT_EXPIRES_IN=24h
+
+# Configuración del servidor
+PORT=3000
+ENVIRONMENT=development
+
+# Configuración CORS
+CORS_ORIGINS=http://localhost:4200,http://localhost:3000
+```
+
+### 3. Instalar dependencias
+```bash
 go mod download
+```
 
-Configurar variables de entorno
-Crea un archivo .env en la raíz del proyecto
-
-3. Configurar el Frontend
-Navegar al directorio del frontend
-bash
-Run
-cd hospital-frontend
-Instalar dependencias de Node.js
-bash
-Run
-npm install
-Instalar Angular CLI (si no está instalado)
-bash
-Run
-npm install -g @angular/cli
-🚀 Uso
-Ejecutar el Backend
-Desde la raíz del proyecto:
-
-bash
-Run
+### 4. Ejecutar la aplicación
+```bash
+# Modo desarrollo
 go run main.go
-El servidor backend estará disponible en: http://localhost:3000
 
-Ejecutar el Frontend
-Desde el directorio hospital-frontend:
+# O compilar y ejecutar
+go build -o hospital-system.exe
+.\hospital-system.exe
+```
 
-bash
-Run
-cd hospital-frontendng serve
-O desde la raíz del proyecto:
+El servidor estará disponible en: `http://localhost:3000`
 
-bash
-Run
-cd hospital-frontend && ng serve
-El frontend estará disponible en: http://localhost:4200
+## 🚀 Uso
 
-Desarrollo Completo
-Para ejecutar ambos servicios simultáneamente:
+### Endpoints principales
 
-Terminal 1 (Backend):
+#### Autenticación
+- `POST /api/v1/auth/register` - Registro de usuario
+- `POST /api/v1/auth/login` - Inicio de sesión
+- `POST /api/v1/auth/enable-mfa` - Habilitar MFA
+- `POST /api/v1/auth/verify-mfa` - Verificar código MFA
 
-bash
-Run
-go run main.go
-Terminal 2 (Frontend):
+#### Gestión de Usuarios
+- `GET /api/v1/usuarios` - Listar usuarios
+- `GET /api/v1/usuarios/:id` - Obtener usuario específico
+- `POST /api/v1/usuarios` - Crear usuario
+- `PUT /api/v1/usuarios/:id` - Actualizar usuario
+- `DELETE /api/v1/usuarios/:id` - Eliminar usuario
 
-bash
-Run
-cd hospital-frontend
-ng serve
+#### Consultorios
+- `GET /api/v1/consultorios` - Listar consultorios
+- `POST /api/v1/consultorios` - Crear consultorio
+- `PUT /api/v1/consultorios/:id` - Actualizar consultorio
+- `DELETE /api/v1/consultorios/:id` - Eliminar consultorio
 
-## Funcionalidades de Autenticación
-### Registro de Usuario
-1. Completa el formulario de registro
-2. Al registrarte exitosamente, aparecerá un diálogo con:
-   - Código QR para configurar MFA
-   - Clave secreta manual
-3. Escanea el QR con una app como Google Authenticator
-4. Continúa al login
+#### Consultas Médicas
+- `GET /api/v1/consultas` - Listar consultas
+- `POST /api/v1/consultas` - Programar consulta
+- `PUT /api/v1/consultas/:id` - Actualizar consulta
+- `DELETE /api/v1/consultas/:id` - Cancelar consulta
+
+#### Expedientes
+- `GET /api/v1/expedientes` - Listar expedientes
+- `GET /api/v1/expedientes/:id` - Ver expediente específico
+- `POST /api/v1/expedientes` - Crear expediente
+- `PUT /api/v1/expedientes/:id` - Actualizar expediente
+
+#### Recetas
+- `GET /api/v1/recetas` - Listar recetas
+- `POST /api/v1/recetas` - Crear receta
+- `PUT /api/v1/recetas/:id` - Actualizar receta
+
+#### Horarios
+- `GET /api/v1/horarios` - Ver horarios
+- `POST /api/v1/horarios` - Crear horario
+- `PUT /api/v1/horarios/:id` - Actualizar horario
+
+## 🔐 Autenticación y Seguridad
+
+### Registro con MFA
+1. Registra un nuevo usuario en `/api/v1/auth/register`
+2. El sistema generará un código QR y clave secreta para MFA
+3. Configura tu aplicación de autenticación (Google Authenticator, Authy, etc.)
+4. Verifica el código MFA para completar el registro
+
 ### Inicio de Sesión
-1. Ingresa tu email y contraseña
-2. Si tienes MFA habilitado, ingresa el código de 6 dígitos
-3. Accede al dashboard
-## 📡 API Endpoints
-### Autenticación
-- POST /api/v1/auth/register - Registro de usuario con MFA
-- POST /api/v1/auth/login - Inicio de sesión con soporte MFA
-- POST /api/v1/auth/enable-mfa - Habilitar MFA
-- POST /api/v1/auth/verify-mfa - Verificar código MFA
-### Usuarios
-- GET /api/v1/usuarios - Obtener todos los usuarios
-- GET /api/v1/usuarios/:id - Obtener usuario por ID
-- POST /api/v1/usuarios - Crear nuevo usuario
-- PUT /api/v1/usuarios/:id - Actualizar usuario
-- DELETE /api/v1/usuarios/:id - Eliminar usuario
-### Consultorios
-- GET /api/v1/consultorios - Obtener todos los consultorios
-- GET /api/v1/consultorios/:id - Obtener consultorio por ID
-- POST /api/v1/consultorios - Crear nuevo consultorio
-- PUT /api/v1/consultorios/:id - Actualizar consultorio
-- DELETE /api/v1/consultorios/:id - Eliminar consultorio
-### Consultas
-- GET /api/v1/consultas - Obtener todas las consultas
-- POST /api/v1/consultas - Crear nueva consulta
-### Expedientes
-- GET /api/v1/expedientes - Obtener todos los expedientes
-- GET /api/v1/expedientes/:id - Obtener expediente por ID
-- POST /api/v1/expedientes - Crear nuevo expediente
-- PUT /api/v1/expedientes/:id - Actualizar expediente
-- DELETE /api/v1/expedientes/:id - Eliminar expediente
-### Recetas
-- GET /api/v1/recetas - Obtener todas las recetas
-- GET /api/v1/recetas/:id - Obtener receta por ID
-- POST /api/v1/recetas - Crear nueva receta
-- PUT /api/v1/recetas/:id - Actualizar receta
-- DELETE /api/v1/recetas/:id - Eliminar receta
-### Horarios
-- GET /api/v1/horarios - Obtener todos los horarios
-- GET /api/v1/horarios/:id - Obtener horario por ID
-- POST /api/v1/horarios - Crear nuevo horario
-- PUT /api/v1/horarios/:id - Actualizar horario
-- DELETE /api/v1/horarios/:id - Eliminar horario
+1. Envía credenciales a `/api/v1/auth/login`
+2. Si MFA está habilitado, proporciona el código de 6 dígitos
+3. Recibe el token JWT para autenticación en futuras peticiones
 
+### Middleware de Seguridad
+- **Rate Limiting**: Previene ataques de fuerza bruta
+- **CORS**: Configurado para desarrollo seguro
+- **JWT Validation**: Verificación de tokens en rutas protegidas
+- **Role-based Access**: Control de acceso basado en roles
+
+## 📊 Logging y Monitoreo
+
+El sistema incluye logging completo de:
+- Peticiones HTTP
+- Errores de autenticación
+- Operaciones de base de datos
+- Acciones de usuarios
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 📞 Contacto
+
+- **Desarrollador**: Lalo12-max
+- **Repositorio**: [https://github.com/Lalo12-max/back-hospital](https://github.com/Lalo12-max/back-hospital)
+
+## 🔄 Changelog
+
+Ver `CHANGELOG.md` para un historial detallado de cambios y versiones.
