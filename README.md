@@ -205,23 +205,9 @@ El sistema incluye logging completo de:
 - Operaciones de base de datos
 - Acciones de usuarios
 
-## 🤝 Contribución
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 📞 Contacto
+## Desarrollo
 
 - **Desarrollador**: Lalo12-max
 - **Repositorio**: [https://github.com/Lalo12-max/back-hospital](https://github.com/Lalo12-max/back-hospital)
 
-## 🔄 Changelog
-
-Ver `CHANGELOG.md` para un historial detallado de cambios y versiones.
