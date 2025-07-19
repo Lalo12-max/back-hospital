@@ -11,20 +11,20 @@ import (
 func GetRecetas(c *fiber.Ctx) error {
 	db := config.GetDB()
 
-	// Obtener información del usuario autenticado
+	
 	userID := c.Locals("user_id").(int)
 	userTipo := c.Locals("user_tipo").(string)
 
 	var query string
 	var args []interface{}
 
-	// Si es paciente, solo puede ver sus propias recetas
+	
 	if userTipo == "paciente" {
 		query = `SELECT id_receta, fecha, medico_id, medicamento, dosis, consultorio_id, paciente_id 
 				 FROM Recetas WHERE paciente_id = $1`
 		args = []interface{}{userID}
 	} else {
-		// Otros roles pueden ver todas las recetas
+		
 		query = `SELECT id_receta, fecha, medico_id, medicamento, dosis, consultorio_id, paciente_id 
 				 FROM Recetas`
 		args = []interface{}{}

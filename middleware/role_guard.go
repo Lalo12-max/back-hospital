@@ -13,7 +13,7 @@ type AccessRule struct {
 	Actions  []string
 }
 
-// Definir las reglas de acceso por tipo de usuario
+
 var rolePermissions = map[string][]AccessRule{
 	"admin": {
 		{Resource: "usuarios", Actions: []string{"read", "create", "update", "delete"}},
